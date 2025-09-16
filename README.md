@@ -7,6 +7,12 @@
 * add actual code files to electron app
 * test docker compose build
 * build out packages and script
+* put within client/.env
+
+```env
+VITE_API_URL=http://localhost:4000/api
+VITE_SOCKET_URL=ws://localhost:4000
+```
 
 # `HoldMyBag`
 
