@@ -1,0 +1,22 @@
+/* Minimal button and input styling for demonstration/debug */
+
+button {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.4em 1em;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input {
+  border: 1px solid #000;
+  border-radius: 3px;
+  padding: 0.36em;
+  font-size: 1em;
+}
