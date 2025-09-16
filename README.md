@@ -14,6 +14,16 @@ VITE_API_URL=http://localhost:4000/api
 VITE_SOCKET_URL=ws://localhost:4000
 ```
 
+* put within server.env
+
+```env
+PORT=4000
+NODE_ENV=development
+DATABASE_URL=postgresql://user:password@localhost:5432/holdmybag
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=changeme
+```
+
 # `HoldMyBag`
 
 ...
