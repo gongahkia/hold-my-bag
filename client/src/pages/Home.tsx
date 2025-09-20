@@ -19,14 +19,9 @@ import {
 } from 'lucide-react'
 import LoadingSpinner from '../components/common/LoadingSpinner'
 
-const gameTypes = [
-  { id: 'colorMatch', name: 'Color Match', icon: '🎨', description: 'Match colors as fast as you can!' },
-  { id: 'quickDraw', name: 'Quick Draw', icon: '✏️', description: 'Draw and guess in real-time' },
-  { id: 'snakeRoyale', name: 'Snake Royale', icon: '🐍', description: 'Battle royale with snakes' },
-  { id: 'tapBattle', name: 'Tap Battle', icon: '👆', description: 'Tap faster than your friends' },
-  { id: 'triviaBlitz', name: 'Trivia Blitz', icon: '🧠', description: 'Quick trivia questions' },
-  { id: 'wordChain', name: 'Word Chain', icon: '🔗', description: 'Build word chains together' }
-]
+import { mockGameTypes } from '../data/mockData'
+
+const gameTypes = mockGameTypes
 
 const Home: React.FC = () => {
   const navigate = useNavigate()
