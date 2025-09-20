@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import ColorMatchDemo from "../components/games/ColorMatchDemo";
+import TapBattleDemo from "../components/games/TapBattleDemo";
+import TriviaBlitzDemo from "../components/games/TriviaBlitzDemo";
 import { mockRooms, mockUsers, mockGameTypes } from "../data/mockData";
 
 const GameRoom: React.FC = () => {
@@ -12,7 +14,16 @@ const GameRoom: React.FC = () => {
   const gameType = mockGameTypes.find(g => g.id === room.gameType) || mockGameTypes[0];
 
   if (gameStarted) {
-    return <ColorMatchDemo />;
+    switch (room.gameType) {
+      case 'colorMatch':
+        return <ColorMatchDemo />;
+      case 'tapBattle':
+        return <TapBattleDemo />;
+      case 'triviaBlitz':
+        return <TriviaBlitzDemo />;
+      default:
+        return <ColorMatchDemo />;
+    }
   }
 
   return (
