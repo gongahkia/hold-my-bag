@@ -2,11 +2,11 @@
 
 # `HoldMyBag`
 
-Quick party games for when you're waiting around - because boredom is the real enemy.
+Quick party games for boyfriends waiting outside changing rooms - because holding her bag doesn't have to be boring.
 
 ## Rationale
 
-Ever found yourself in that awkward limbo where you're waiting for something but don't want to commit to anything substantial? Maybe you're at a restaurant waiting for your chronically late friend, stuck in a lobby, or procrastinating on actual work. HoldMyBag was born from the realization that modern humans have an attention span of approximately 3.2 seconds and need instant gratification in bite-sized, multiplayer formats. It's like having a pocket-sized arcade that doesn't require quarters, just WiFi and questionable decision-making skills.
+Ever found yourself standing outside H&M, Zara, or Forever 21, clutching a purse that costs more than your monthly coffee budget while your girlfriend tries on her 47th outfit? Welcome to the boyfriend zone - that peculiar purgatory where time moves differently and "just five more minutes" translates to roughly one geological epoch. HoldMyBag was born from the realization that these retail hostage situations needed a survival mechanism. It's the perfect companion for those moments when you're legally obligated to provide fashion commentary but secretly just want to play games until she emerges victorious with three new tops that look identical to the ones she already owns.
 
 ## Stack
 
