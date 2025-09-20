@@ -1,9 +1,12 @@
-import { Router } from "express";
-import { getGames, getLeaderboard } from "../controllers/gameController";
+import express from 'express'
+import { startGame, endGame, submitScore, getLeaderboard } from '../controllers/gameController'
+import { authenticateToken } from '../middleware/auth'
 
-const router = Router();
+const router = express.Router()
 
-router.get("/", getGames);
-router.get("/leaderboard", getLeaderboard);
+router.post('/start', authenticateToken, startGame)
+router.put('/end/:gameId', authenticateToken, endGame)
+router.post('/score', authenticateToken, submitScore)
+router.get('/leaderboard/:gameId', getLeaderboard)
 
-export default router;
+export default router
