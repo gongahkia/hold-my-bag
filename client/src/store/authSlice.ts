@@ -1,33 +1,47 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+export interface User {
+  id: string
+  nickname: string
+}
 
 interface AuthState {
-  userId: string | null;
-  nickname: string | null;
-  token: string | null;
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
 }
 
 const initialState: AuthState = {
-  userId: null,
-  nickname: null,
-  token: null,
-};
+  user: null,
+  token: localStorage.getItem('token'),
+  isAuthenticated: false,
+  isLoading: false,
+}
 
 const authSlice = createSlice({
-  name: "auth",
+  name: 'auth',
   initialState,
   reducers: {
-    setCredentials(state, action: PayloadAction<{ userId: string; nickname: string; token: string }>) {
-      state.userId = action.payload.userId;
-      state.nickname = action.payload.nickname;
-      state.token = action.payload.token;
+    setCredentials(state, action: PayloadAction<{ user: User; token: string }>) {
+      state.user = action.payload.user
+      state.token = action.payload.token
+      state.isAuthenticated = true
+      state.isLoading = false
+      localStorage.setItem('token', action.payload.token)
     },
     logout(state) {
-      state.userId = null;
-      state.nickname = null;
-      state.token = null;
+      state.user = null
+      state.token = null
+      state.isAuthenticated = false
+      state.isLoading = false
+      localStorage.removeItem('token')
+    },
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.isLoading = action.payload
     },
   },
-});
+})
 
-export const { setCredentials, logout } = authSlice.actions;
-export default authSlice.reducer;
+export const { setCredentials, logout, setLoading } = authSlice.actions
+export default authSlice.reducer
