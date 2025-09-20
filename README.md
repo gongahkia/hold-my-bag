@@ -2,11 +2,15 @@
 
 # `HoldMyBag`
 
-Quick party games for boyfriends waiting outside changing rooms - because holding her bag doesn't have to be boring.
+Making the [Waiting Boyfriend](https://preview.redd.it/5ms8tcd4hu821.jpg?width=1080&crop=smart&auto=webp&s=6333f8fbe34a6d50295bd7d9be322265bd7e9d30) experience [Multiplayer](#architecture).
 
 ## Rationale
 
-Ever found yourself standing outside H&M, Zara, or Forever 21, clutching a purse that costs more than your monthly coffee budget while your girlfriend tries on her 47th outfit? Welcome to the boyfriend zone - that peculiar purgatory where time moves differently and "just five more minutes" translates to roughly one geological epoch. HoldMyBag was born from the realization that these retail hostage situations needed a survival mechanism. It's the perfect companion for those moments when you're legally obligated to provide fashion commentary but secretly just want to play games until she emerges victorious with three new tops that look identical to the ones she already owns.
+The inspiration for `HoldMyBag` came into my head last Saturday when I realised I had unconsciously been assimilated into the Boyfriend Corner at Singapore's [Brandy Melville](https://sg.brandymelville.com/password) outlet.
+
+<div align="center">
+    <img src="./asset/logo/shopping.png" width="10%">
+</div>
 
 ## Stack
 
