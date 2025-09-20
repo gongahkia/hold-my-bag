@@ -1,29 +1,5 @@
 [![](https://img.shields.io/badge/hold_my_bag_1.0.0-passing-green)](https://github.com/gongahkia/hold-my-bag/releases/tag/1.0.0) 
 
-## Todo
-
-* add actual code files to backend api
-* add actual code files to react frontend
-* add actual code files to electron app
-* test docker compose build
-* build out packages and script
-* put within client/.env
-
-```env
-VITE_API_URL=http://localhost:4000/api
-VITE_SOCKET_URL=ws://localhost:4000
-```
-
-* put within server.env
-
-```env
-PORT=4000
-NODE_ENV=development
-DATABASE_URL=postgresql://user:password@localhost:5432/holdmybag
-REDIS_URL=redis://localhost:6379
-JWT_SECRET=changeme
-```
-
 # `HoldMyBag`
 
 Quick party games for when you're waiting around - because boredom is the real enemy.
@@ -34,84 +10,53 @@ Ever found yourself in that awkward limbo where you're waiting for something but
 
 ## Stack
 
-### Frontend
-- **React 18** with TypeScript for type-safe component development
-- **Vite 5.4** for lightning-fast development and hot module replacement
-- **Tailwind CSS** for utility-first styling and responsive design
-- **Framer Motion** for smooth animations and micro-interactions
-- **Redux Toolkit** for predictable state management
-- **React Router** for client-side routing
-
-### Backend
-- **Node.js** with Express.js for RESTful API development
-- **Socket.io** for real-time multiplayer game communication
-- **JWT** for stateless authentication
-- **bcrypt** for password hashing and security
-
-### Database
-- **PostgreSQL** for relational data storage (users, games, scores)
-- **Redis** for session management and real-time game state caching
-
-### Deployment
-- **Docker** with Docker Compose for containerized development
-- **Nginx** for reverse proxy and static file serving
-- **GitHub Actions** for CI/CD pipeline
-
-### Other Technologies
-- **Electron** (planned) for desktop application packaging
-- **PWA** capabilities for mobile-first experience
-- **ESLint + Prettier** for code quality and consistency
-
-## Screenshots
-
-*Coming soon - currently showcasing the interactive demo!*
+* *Frontend*: [React](https://react.dev/), [Vite](https://vite.dev/), [Electron.js](https://www.electronjs.org/), [Tailwind CSS](https://tailwindcss.com/), [TypeScript](https://www.typescriptlang.org/)
+* *Backend*: [Node.js](https://nodejs.org/en), [Socket.io](https://socket.io/)
+* *Auth*: [JWT](https://www.jwt.io/), [bcrypt](https://en.wikipedia.org/wiki/Bcrypt)
+* *DB*: [PostgreSQL](https://www.postgresql.org/)
+* *Cache*: [Redis](https://redis.io/)
+* *Package*: [Docker](https://www.docker.com/)
+* *Proxy*: [Nginx](https://nginx.org/)
+* *CI/CD*: [Github Actions](https://github.com/features/actions)
 
 ## Usage
 
-### Quick Start
+The below instructions are for locally hosting `HoldMyBag`.
 
-```bash
-# Clone the repository
-git clone https://github.com/gongahkia/hold-my-bag.git
-cd hold-my-bag
+1. First execute the below.
 
-# Install dependencies
-npm install
-
-# Start the development server
-cd client
-npm install
-npm run dev
+```console
+$ git clone https://github.com/gongahkia/hold-my-bag & cd hold-my-bag
 ```
 
-The application will be available at `http://localhost:5173`
+2. Then create the following files.
+    1. `.env` within [`client/.env`](./client/)
+    2. `.env` within [`server/.env`](./server/)
 
-### Development Commands
+```env
+# client/.env
 
-```bash
-# Frontend development
-cd client
-npm run dev          # Start Vite dev server
-npm run build        # Build for production
-npm run preview      # Preview production build
-
-# Backend development (when implemented)
-cd server
-npm run dev          # Start Express server with nodemon
-npm run start        # Start production server
-
-# Full stack development
-docker-compose up    # Start all services with Docker
+VITE_API_URL=http://localhost:4000/api
+VITE_SOCKET_URL=ws://localhost:4000
 ```
 
-## Support
+```env
+# server/.env
 
-HoldMyBag is designed to work across multiple platforms:
+PORT=4000
+NODE_ENV=development
+DATABASE_URL=postgresql://user:password@localhost:5432/holdmybag
+REDIS_URL=redis://localhost:6379
+JWT_SECRET=changeme
+```
 
-- **Web Browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
-- **Mobile Devices**: iOS 14+ (Safari), Android 8+ (Chrome)
-- **Desktop**: Windows 10+, macOS 10.15+, Linux (Ubuntu 20.04+)
-- **Development**: Node.js 18+, npm 8+, Docker 20+
+3. Finally run the below.
+
+```console
+$ npm install && npm run dev
+$ npm run start 
+$ docker-compose up    
+```
 
 ## Architecture
 
@@ -211,20 +156,17 @@ C4Deployment
     Rel(gameengine, redis, "Game state operations")
 ```
 
+## Support
+
+`HoldMyBag` is designed to work across multiple platforms:
+
+- **Web Browsers**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **Mobile Devices**: iOS 14+ (Safari), Android 8+ (Chrome)
+- **Desktop**: Windows 10+, macOS 10.15+, Linux (Ubuntu 20.04+)
+- **Development**: Node.js 18+, npm 8+, Docker 20+
+
 ## Legal
 
 ### Disclaimer
 
 This software is provided "as is" without warranty of any kind, express or implied. The developers make no representations or warranties regarding the accuracy, reliability, or completeness of the software. Users assume all risks associated with the use of this application, including but not limited to data loss, security vulnerabilities, or excessive procrastination leading to missed deadlines.
-
-HoldMyBag is designed for entertainment purposes only. The developers are not responsible for:
-- Addiction to quick party games during work hours
-- Deterioration of productivity due to "just one more game" syndrome
-- Heated arguments arising from competitive multiplayer sessions
-- The inevitable realization that you've been playing simple games for 3 hours straight
-
-By using this software, you acknowledge that you are willingly entering a time vortex of casual gaming and that any resulting consequences to your schedule, relationships, or responsibilities are entirely your own fault.
-
-### License
-
-MIT License - See LICENSE file for details.
