@@ -1,0 +1,239 @@
+name: CD (Deployment)
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+      version:
+        description: 'Version to deploy (leave empty for latest)'
+        required: false
+        type: string
+      skip_tests:
+        description: 'Skip running tests before deployment'
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  pre-deployment-checks:
+    runs-on: ubuntu-latest
+    name: Pre-deployment Checks
+    if: ${{ !inputs.skip_tests }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
+
+      - name: Run quick tests
+        run: |
+          cd client && npm run build
+          cd ../server && npm run build
+
+      - name: Validate Docker setup
+        run: |
+          docker-compose config
+
+  build-and-push:
+    runs-on: ubuntu-latest
+    name: Build & Push Docker Images
+    needs: [pre-deployment-checks]
+    if: always() && (needs.pre-deployment-checks.result == 'success' || inputs.skip_tests)
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ secrets.DOCKER_USERNAME }}/holdmybag-client
+            ${{ secrets.DOCKER_USERNAME }}/holdmybag-server
+          tags: |
+            type=ref,event=branch
+            type=raw,value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=${{ inputs.environment }}
+
+      - name: Build and push client image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./client
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/holdmybag-client:${{ inputs.environment }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push server image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./server
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/holdmybag-server:${{ inputs.environment }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-staging:
+    runs-on: ubuntu-latest
+    name: Deploy to Staging
+    needs: [build-and-push]
+    if: inputs.environment == 'staging'
+    environment: staging
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/holdmybag
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d
+            docker system prune -f
+
+      - name: Health check
+        run: |
+          sleep 30
+          curl -f ${{ secrets.STAGING_URL }}/health || exit 1
+
+      - name: Notify deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            Staging deployment ${{ job.status }}!
+            Environment: ${{ inputs.environment }}
+            Version: ${{ inputs.version || 'latest' }}
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    name: Deploy to Production
+    needs: [build-and-push]
+    if: inputs.environment == 'production'
+    environment: production
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create deployment backup
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /opt/holdmybag
+            docker-compose exec -T postgres pg_dump -U $POSTGRES_USER $POSTGRES_DB > backup_$(date +%Y%m%d_%H%M%S).sql
+
+      - name: Deploy to production server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /opt/holdmybag
+            docker-compose pull
+            docker-compose down --timeout 30
+            docker-compose up -d
+            docker system prune -f
+
+      - name: Production health check
+        run: |
+          sleep 60
+          for i in {1..5}; do
+            if curl -f ${{ secrets.PRODUCTION_URL }}/health; then
+              echo "Health check passed"
+              exit 0
+            fi
+            echo "Health check attempt $i failed, retrying..."
+            sleep 10
+          done
+          echo "Health check failed after 5 attempts"
+          exit 1
+
+      - name: Notify production deployment
+        uses: 8398a7/action-slack@v3
+        if: always()
+        with:
+          status: ${{ job.status }}
+          channel: '#production-deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            🚀 PRODUCTION deployment ${{ job.status }}!
+            Environment: ${{ inputs.environment }}
+            Version: ${{ inputs.version || 'latest' }}
+            Deployed by: ${{ github.actor }}
+
+  rollback:
+    runs-on: ubuntu-latest
+    name: Rollback (Manual)
+    needs: [deploy-staging, deploy-production]
+    if: failure() && inputs.environment == 'production'
+    environment: production
+
+    steps:
+      - name: Rollback production deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.PRODUCTION_HOST }}
+          username: ${{ secrets.PRODUCTION_USER }}
+          key: ${{ secrets.PRODUCTION_SSH_KEY }}
+          script: |
+            cd /opt/holdmybag
+            docker-compose down
+            docker-compose pull ${{ secrets.DOCKER_USERNAME }}/holdmybag-client:stable
+            docker-compose pull ${{ secrets.DOCKER_USERNAME }}/holdmybag-server:stable
+            docker-compose up -d
+
+      - name: Notify rollback
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'warning'
+          channel: '#production-deployments'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          text: |
+            ⚠️ PRODUCTION ROLLBACK executed!
+            Original deployment failed, rolled back to stable version
+            Manual investigation required
