@@ -33,6 +33,7 @@ const Home: React.FC = () => {
   const dispatch = useDispatch()
   const { user, isAuthenticated, isLoading } = useSelector((state: RootState) => state.auth)
 
+
   const [nickname, setNickname] = useState('')
   const [selectedGame, setSelectedGame] = useState('colorMatch')
   const [creatingRoom, setCreatingRoom] = useState(false)
@@ -68,7 +69,7 @@ const Home: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-screen flex items-center justify-center px-4" style={{backgroundColor: '#f0f9ff', minHeight: '100vh'}}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -146,7 +147,7 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <div className="min-h-screen py-8 px-4" style={{backgroundColor: '#f0f9ff', minHeight: '100vh'}}>
       <div className="max-w-6xl mx-auto">
         {/* Welcome Section */}
         <motion.div
