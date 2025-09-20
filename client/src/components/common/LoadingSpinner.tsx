@@ -1,31 +1,31 @@
-import React from "react";
+import React from 'react'
+import { motion } from 'framer-motion'
 
-const LoadingSpinner: React.FC<{size?: number}> = ({ size = 40 }) => (
-  <div style={{
-    display: "flex", justifyContent: "center", alignItems: "center", padding: "1rem"
-  }}>
-    <svg width={size} height={size} viewBox="0 0 50 50">
-      <circle
-        cx="25"
-        cy="25"
-        r="20"
-        stroke="#000"
-        strokeWidth="5"
-        fill="none"
-        strokeDasharray="94"
-        strokeDashoffset="75"
-      >
-        <animateTransform
-          attributeName="transform"
-          type="rotate"
-          from="0 25 25"
-          to="360 25 25"
-          dur="1s"
-          repeatCount="indefinite"
-        />
-      </circle>
-    </svg>
-  </div>
-);
+interface LoadingSpinnerProps {
+  size?: 'small' | 'medium' | 'large'
+  className?: string
+}
 
-export default LoadingSpinner;
+const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'medium', className = '' }) => {
+  const sizeClasses = {
+    small: 'w-6 h-6',
+    medium: 'w-8 h-8',
+    large: 'w-12 h-12'
+  }
+
+  return (
+    <div className={`flex items-center justify-center ${className}`}>
+      <motion.div
+        className={`${sizeClasses[size]} border-4 border-primary-200 border-t-primary-600 rounded-full`}
+        animate={{ rotate: 360 }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          ease: 'linear'
+        }}
+      />
+    </div>
+  )
+}
+
+export default LoadingSpinner
