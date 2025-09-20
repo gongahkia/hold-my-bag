@@ -1,13 +1,10 @@
-import { createClient } from "redis";
+import { createClient } from 'redis'
+import { config } from './environment'
 
-export const redisClient = createClient({
-  url: process.env.REDIS_URL
-});
+const redis = createClient({
+  url: config.redisUrl
+})
 
-redisClient.on("error", (err) => {
-  console.error("Redis error:", err);
-});
+redis.on('error', (err) => console.log('Redis Client Error', err))
 
-export async function connectRedis() {
-  await redisClient.connect();
-}
+export default redis

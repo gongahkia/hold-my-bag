@@ -1,9 +1,10 @@
-import { Router } from "express";
-import { getProfile, updateProfile } from "../controllers/userController";
+import express from 'express'
+import { getUserProfile, updateUserProfile } from '../controllers/userController'
+import { authenticateToken } from '../middleware/auth'
 
-const router = Router();
+const router = express.Router()
 
-router.get("/:userId", getProfile);
-router.put("/:userId", updateProfile);
+router.get('/profile', authenticateToken, getUserProfile)
+router.put('/profile', authenticateToken, updateUserProfile)
 
-export default router;
+export default router
